@@ -53,7 +53,7 @@ def plot_aun(aun_frame: pd.DataFrame) -> p9.ggplot:
              size=4,
              alpha=0.6) +
          p9.scale_color_brewer(type="div", palette=1) +
-         p9.guides(linetype=None) +
+         p9.guides(linetype=None, color=None) +
          p9.ylab("area under Nx") +
          p9.xlab("") +
          p9.coord_flip() +
