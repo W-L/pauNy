@@ -175,7 +175,7 @@ class TestAssemblyCollection(unittest.TestCase):
         self.assertEqual(aunf.shape, (2, 3))
 
 
-    def test_write_frames(self):
+    def test_metric_frames(self):
         # only ref case
         self.ac_ref.metric_dataframes(out_name="testing_frame")
         check_exist01 = os.path.isfile('testing_frame.nx.csv')
@@ -186,6 +186,19 @@ class TestAssemblyCollection(unittest.TestCase):
         self.assertTrue(check_exist02)
         self.assertTrue(check_notempty01 > 0)
         self.assertTrue(check_notempty02 > 0)
+
+
+    def test_metric_plots(self):
+        self.ac_ref.metric_plots(out_name="testing")
+        check_exist = os.path.isfile('testing.nx.pdf')
+        check_notempty = os.path.getsize('testing.nx.pdf')
+        self.assertTrue(check_exist)
+        self.assertTrue(check_notempty > 0)
+
+        check_exist = os.path.isfile('testing.aun.pdf')
+        check_notempty = os.path.getsize('testing.aun.pdf')
+        self.assertTrue(check_exist)
+        self.assertTrue(check_notempty > 0)
 
 
 

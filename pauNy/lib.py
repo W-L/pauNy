@@ -7,6 +7,8 @@ from typing import List, Dict, TextIO, Tuple, Union
 import numpy as np
 import pandas as pd
 
+import plot
+
 # type aliases
 NX_DICT = Dict[str, List[int]]
 AUN_DICT = Dict[str, float]
@@ -87,6 +89,35 @@ class AssemblyCollection:
 
         print_frame(df=nx_frame, out_file=f'{out_name}.nx.csv')
         print_frame(df=aun_frame, out_file=f'{out_name}.aun.csv')
+
+
+    def metric_plots(self, nx_frame: pd.DataFrame = None, aun_frame: pd.DataFrame = None, out_name: str = 'pauNy', format: str = 'pdf') -> None:
+        """
+        Generate a plot of Nx curves and auN values from all input assemblies
+
+        :param nx_frame: Dataframe of Nx values for all assemblies
+        :param aun_frame: Dataframe of auN values for all assemblies
+        :param out_name: Base name for output files
+        :param format: Format passed to plotnine's save function
+        :return: None
+        """
+        if nx_frame is None:
+            nx_frame, aun_frame = self.generate_dataframes()
+        if aun_frame is None:
+            nx_frame, aun_frame = self.generate_dataframes()
+        plot.save_plot(
+            plot=plot.plot_nx(nx_frame),
+            type="nx",
+            out_name=out_name,
+            format=format
+        )
+        plot.save_plot(
+            plot=plot.plot_aun(aun_frame),
+            type="aun",
+            out_name=out_name,
+            format=format
+        )
+
 
 
     def _calculate_Nx(self) -> NX_DICT:

@@ -58,25 +58,28 @@ def main():
     )
     # calculate Nx and auN values for all input files
     nx_values, aun_values = asm.calculate_metrics()
-    # generate pandas frames from the values
+    # generate pandas frames from the values - passing is optional
     nx_frame, aun_frame = asm.generate_dataframes(nx_values, aun_values)
-    # write dataframes to files
-    asm.write_dataframes(
+    # write dataframes to files - passing is optional
+    asm.metric_dataframes(
         nx_frame=nx_frame,
         aun_frame=aun_frame,
         out_name=args.out
     )
-    # generate and save plots
-    pauNy.save_plot(
-        plot=pauNy.plot_nx(nx_frame),
-        type="nx",
+    # generate and save plots - passing data frames is optional
+    asm.metric_plots(
+        nx_frame=nx_frame,
+        aun_frame=aun_frame,
         out_name=args.out
     )
-    pauNy.save_plot(
-        plot=pauNy.plot_aun(aun_frame),
-        type="aun",
-        out_name=args.out
-    )
+    # produce pngs for the example in repository
+    # asm.metric_plots(
+    #     nx_frame=nx_frame,
+    #     aun_frame=aun_frame,
+    #     out_name=args.out,
+    #     format="png"
+    # )
+
 
 
 if __name__ == "__main__":
