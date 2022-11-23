@@ -28,7 +28,7 @@ class AssemblyCollection:
         if reference_path:
             # if reference file is given, save its name and load the genome size
             self.ref_path = pathlib.Path(reference_path)
-            self.ref_name = self.ref_path.stem
+            self.ref_name = self.ref_path.name
             self._assembly_paths.append(self.ref_path)
             self.genome_size = Reference(path=self.ref_path).genome_size()
         elif genome_size:
@@ -167,7 +167,7 @@ class Assembly:
 
     def __init__(self, path: Union[pathlib.Path, str], gsize: int = None):
         self.path = pathlib.Path(path)
-        self.name = self.path.stem
+        self.name = self.path.name
         self.gsize = 0 if not gsize else gsize
         self.gzipped = is_gzipped(self.path)
         self.lengths = self._get_sequence_lengths()
@@ -181,9 +181,10 @@ class Assembly:
         """
         assert os.path.getsize(self.path) != 0
         seq_lengths = []
-        open_func = open if not self.gzipped else gzip.open
+        open_func = gzip.open if self.gzipped else open
+        read_func = read_fa_gz if self.gzipped else read_fa
         with open_func(self.path, 'r') as fa:
-            for header, seq in read_fa(fa):
+            for header, seq in read_func(fa):
                 seq_lengths.append(len(seq))
         # get lengths of all sequences
         lengths = np.array(seq_lengths)
@@ -267,13 +268,24 @@ def read_fa(fh: TextIO) -> Tuple[str, str]:
     :param fh: File handle of an open file connection
     :return: Tuple of fasta header and sequence
     """
-    # iterator for all headers in the file
     faiter = (x[1] for x in groupby(fh, lambda line: line[0] == ">"))
     for header in faiter:
-        # drop >
         headerStr = header.__next__().strip().split(' ')[0]
-        # join sequence lines
         seq = "".join(s.strip() for s in faiter.__next__())
+        yield headerStr, seq
+
+
+def read_fa_gz(fh: TextIO) -> Tuple[str, str]:
+    """
+    Yield headers and sequences of a gzipped fasta file
+
+    :param fh: File handle of an open file connection
+    :return: Tuple of fasta header and sequence
+    """
+    faiter = (x[1] for x in groupby(fh, lambda line: str(line, 'utf-8')[0] == ">"))
+    for header in faiter:
+        headerStr = str(header.__next__(), 'utf-8').strip().replace('>', '').split()[0]
+        seq = "".join(str(s, 'utf-8').strip() for s in faiter.__next__())
         yield headerStr, seq
 
 
