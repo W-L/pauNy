@@ -53,7 +53,7 @@ class AssemblyCollection:
         return nx_values, aun_values
 
 
-    def generate_dataframes(self, nx_values: NX_DICT, aun_values: AUN_DICT) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def generate_dataframes(self, nx_values: NX_DICT = None, aun_values: AUN_DICT = None) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Generate pandas.DataFrames from the dictionaries of calculated values
 
@@ -61,13 +61,17 @@ class AssemblyCollection:
         :param aun_values: Dict of auN values per assembly
         :return: Dataframes for both metrics
         """
+        if not nx_values:
+            nx_values, aun_values = self.calculate_metrics()
+        if not aun_values:
+            nx_values, aun_values = self.calculate_metrics()
         nx_frame = self._generate_nx_frame(nx_values)
         aun_frame = self._generate_aun_frame(aun_values)
         return nx_frame, aun_frame
 
 
-    @staticmethod
-    def write_dataframes(nx_frame: pd.DataFrame, aun_frame: pd.DataFrame, out_name: str) -> None:
+
+    def metric_dataframes(self, nx_frame: pd.DataFrame = None, aun_frame: pd.DataFrame = None, out_name: str = None) -> None:
         """
         Write the pandas.DataFrames of Nx and auN values to csv files
 
@@ -76,6 +80,11 @@ class AssemblyCollection:
         :param out_name: Base name for output files
         :return: None
         """
+        if nx_frame is None:
+            nx_frame, aun_frame = self.generate_dataframes()
+        if aun_frame is None:
+            nx_frame, aun_frame = self.generate_dataframes()
+
         print_frame(df=nx_frame, out_file=f'{out_name}.nx.csv')
         print_frame(df=aun_frame, out_file=f'{out_name}.aun.csv')
 
