@@ -22,18 +22,14 @@ and would therefore be a better measure for assembly contiguity. N50 is extremel
 
 ## Installation
 
-Set up a virtual environment and install dependencies 
-
-```shell
-python3 -m venv pauny-venv
-source pauny-venv/bin/activate
-pip install numpy pandas plotnine
-```
-
-Clone the repository
+Clone the repository and install dependencies
 
 ```shell
 git clone https://github.com/W-L/pauNy.git
+cd pauNy/
+python3 -m venv pauny-venv
+source pauny-venv/bin/activate
+pip install numpy pandas plotnine
 ```
 
 
