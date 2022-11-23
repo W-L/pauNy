@@ -177,9 +177,7 @@ class TestAssemblyCollection(unittest.TestCase):
 
     def test_write_frames(self):
         # only ref case
-        nx, aun = self.ac_ref.calculate_metrics()
-        nxf, aunf = self.ac_ref.generate_dataframes(nx, aun)
-        self.ac_ref.write_dataframes(nxf, aunf, "testing_frame")
+        self.ac_ref.metric_dataframes(out_name="testing_frame")
         check_exist01 = os.path.isfile('testing_frame.nx.csv')
         check_exist02 = os.path.isfile('testing_frame.aun.csv')
         check_notempty01 = os.path.getsize('testing_frame.nx.csv')
