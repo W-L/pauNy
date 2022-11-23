@@ -12,7 +12,7 @@ And it might hide some interesting insight about the total contiguity of an asse
 
  
 Further, area under Nx (auN) is the sum of the area under such an Nx curve. It does not suffer from the same issues that can affect N50 (see linked blog post), 
-and would therefore be a better measure for assembly contiguity. N50 is extremely popular though, but maybe the lack of a simple python module called **p-auN-y** can make a difference? 
+and would therefore be a better measure for assembly contiguity. N50 is extremely popular though, but maybe introducing a simple python module called **p-auN-y** can make a difference? 
 
 ## Installation
 
@@ -39,9 +39,9 @@ Execute the runscript with input `-i / --input`, which can be fasta files of ass
 
 ### Optional args
 
-`-o / --out` can specify a base name for output files
-`-r / --ref` for a path to a reference assembly. This triggers calculation of NGx and auNG values using the genome size. And will also mark this assembly as reference in output.
-`-g / --genomesize` alternatively to a reference file, a genome size (estimate) can be given for scaling values to NGx and auNG.
+- `-o / --out` can specify a base name for output files
+- `-r / --ref` for a path to a reference assembly. This triggers calculation of NGx and auNG values using the genome size. And will also mark this assembly as reference in output.
+- `-g / --genomesize` alternatively to a reference file, a genome size (estimate) can be given for scaling values to NGx and auNG.
 
 
 ```shell
@@ -80,6 +80,8 @@ nx_frame, aun_frame = asm_c.generate_dataframes()   # dicts can be passed, other
 asm_c.metric_dataframes()                           # print metrics to file; as above dfs can be passed optionally 
 asm_c.metric_plots()                                # generate visualisations (see example); as above dfs can be passed optionally
 ```
+
+For documentation check out the docstrings and type hints in the sources.
 
 
 ## Example
