@@ -1,5 +1,11 @@
 # pauNy
 
+![release](https://img.shields.io/github/v/release/W-L/pauNy)
+![coverage](https://img.shields.io/badge/coverage-98%25-success)
+![downloads](https://img.shields.io/github/downloads/W-L/pauNy/total)
+![license](https://img.shields.io/github/license/W-L/pauNy)
+
+
 Nx curves and area-under-Nx metrics for python
 
 This repository is based on [a blog post by Heng Li](https://lh3.github.io/2020/04/08/a-new-metric-on-assembly-contiguity) discussing 
