@@ -14,6 +14,7 @@ def setup_parser():
     parser.add_argument('-i', '--input', dest='input', type=str, required=True, nargs='+',
                         help='input fasta/fastq file(s) or director(ies) of files. Can be multiple (space-separated).')
     parser.add_argument('-o', '--out', dest='out', type=str, default="pauNy", help='base name for output files')
+    parser.add_argument('-f', '--format', dest='format', type=str, default='pdf', help='output format for plots')
     reference_group = parser.add_mutually_exclusive_group(required=False)
     reference_group.add_argument('-r', '--ref', dest='ref', type=str, default=None, help='path to reference sequence file')
     reference_group.add_argument('-g', '--genomesize', dest='genomesize', type=int, default=0, help='genome size or estimate')
@@ -65,7 +66,7 @@ def main():
     # this also generates pandas frames
     asm.calculate_metrics()
     # visualise results
-    asm.plot()
+    asm.plot(format=args.format)
 
     # produce pngs for the example in repository
     # asm.plot(format="png")
