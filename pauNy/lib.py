@@ -21,11 +21,13 @@ class AssemblyCollection:
         self,
         paths: List[Union[pathlib.Path, str]],
         reference_path: Union[pathlib.Path, str] = None,
-        genome_size: int = None
+        genome_size: int = None,
+        out_name: str = 'pauNy'
     ):
         # make sure that input paths are pathlib.Paths
         self._assembly_paths = convert_paths(paths)
         self.ref_name = ''
+        self.out_name = out_name
 
         if reference_path:
             # if reference file is given, save its name and load the genome size
@@ -44,77 +46,45 @@ class AssemblyCollection:
 
 
 
-    def calculate_metrics(self) -> Tuple[NX_DICT, AUN_DICT]:
+    def calculate_metrics(self) -> None:
         """
         Calculate Nx and auN values for all assemblies in the collection
 
-        :return: Dictionaries of Nx and auN values per input assembly
-        """
-        nx_values = self._calculate_Nx()
-        aun_values = self._calculate_auN()
-        return nx_values, aun_values
-
-
-    def generate_dataframes(self, nx_values: NX_DICT = None, aun_values: AUN_DICT = None) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """
-        Generate pandas.DataFrames from the dictionaries of calculated values
-
-        :param nx_values: Dict of Nx values per assembly
-        :param aun_values: Dict of auN values per assembly
-        :return: Dataframes for both metrics
-        """
-        if not nx_values:
-            nx_values, aun_values = self.calculate_metrics()
-        if not aun_values:
-            nx_values, aun_values = self.calculate_metrics()
-        nx_frame = self._generate_nx_frame(nx_values)
-        aun_frame = self._generate_aun_frame(aun_values)
-        return nx_frame, aun_frame
-
-
-
-    def metric_dataframes(self, nx_frame: pd.DataFrame = None, aun_frame: pd.DataFrame = None, out_name: str = None) -> None:
-        """
-        Write the pandas.DataFrames of Nx and auN values to csv files
-
-        :param nx_frame: Dataframe of Nx values for all assemblies
-        :param aun_frame: Dataframe of auN values for all assemblies
-        :param out_name: Base name for output files
         :return: None
         """
-        if nx_frame is None:
-            nx_frame, aun_frame = self.generate_dataframes()
-        if aun_frame is None:
-            nx_frame, aun_frame = self.generate_dataframes()
+        self.nx_values = self._calculate_Nx()
+        self.aun_values = self._calculate_auN()
+        # generate pandas frames and write to file
+        self.nx_frame = self._generate_nx_frame(self.nx_values)
+        self.aun_frame = self._generate_aun_frame(self.aun_values)
+        # write to csv files
+        print_frame(df=self.nx_frame, out_file=f'{self.out_name}.nx.csv')
+        print_frame(df=self.aun_frame, out_file=f'{self.out_name}.aun.csv')
 
-        print_frame(df=nx_frame, out_file=f'{out_name}.nx.csv')
-        print_frame(df=aun_frame, out_file=f'{out_name}.aun.csv')
 
 
-    def metric_plots(self, nx_frame: pd.DataFrame = None, aun_frame: pd.DataFrame = None, out_name: str = 'pauNy', format: str = 'pdf') -> None:
+    def plot(self, format: str = 'pdf') -> None:
         """
         Generate a plot of Nx curves and auN values from all input assemblies
 
-        :param nx_frame: Dataframe of Nx values for all assemblies
-        :param aun_frame: Dataframe of auN values for all assemblies
-        :param out_name: Base name for output files
         :param format: Format passed to plotnine's save function
         :return: None
         """
-        if nx_frame is None:
-            nx_frame, aun_frame = self.generate_dataframes()
-        if aun_frame is None:
-            nx_frame, aun_frame = self.generate_dataframes()
+        try:
+            getattr(self, 'nx_frame')
+        except AttributeError:
+            self.calculate_metrics()
+
         plot.save_plot(
-            plot=plot.plot_nx(nx_frame),
+            plot=plot.plot_nx(self.nx_frame),
             type="nx",
-            out_name=out_name,
+            out_name=self.out_name,
             format=format
         )
         plot.save_plot(
-            plot=plot.plot_aun(aun_frame),
+            plot=plot.plot_aun(self.aun_frame),
             type="aun",
-            out_name=out_name,
+            out_name=self.out_name,
             format=format
         )
 
