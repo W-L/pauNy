@@ -15,6 +15,7 @@ PATH = f"{DATA}/{FILE}"
 GZPATH = f"{DATA}/{FILE}.gz"
 REFPATH = f"{DATA}/{REF}"
 GSIZE = 12000000
+OUTNAME = "TESTING"
 
 
 class TestAssembly(unittest.TestCase):
@@ -108,7 +109,7 @@ class TestAssemblyCollection(unittest.TestCase):
 
     def setUp(self):
         self.ac = pauNy.AssemblyCollection(paths=[PATH])
-        self.ac_ref = pauNy.AssemblyCollection(paths=[PATH], reference_path=REFPATH)
+        self.ac_ref = pauNy.AssemblyCollection(paths=[PATH], reference_path=REFPATH, out_name=OUTNAME)
         self.ac_gsize = pauNy.AssemblyCollection(paths=[PATH], genome_size=GSIZE)
 
 
@@ -142,46 +143,44 @@ class TestAssemblyCollection(unittest.TestCase):
 
 
     def test_calculate_metrics_ref(self):
-        nx, aun = self.ac_ref.calculate_metrics()
-        self.assertEqual(len(nx), 2)
-        self.assertEqual(len(aun), 2)
-        self.assertTrue(isinstance(nx, dict))
-        self.assertTrue(isinstance(aun, dict))
+        self.ac_ref.calculate_metrics()
+        self.assertEqual(len(self.ac_ref.nx_values), 2)
+        self.assertEqual(len(self.ac_ref.aun_values), 2)
+        self.assertTrue(isinstance(self.ac_ref.nx_values, dict))
+        self.assertTrue(isinstance(self.ac_ref.aun_values, dict))
 
 
     def test_calculate_metrics(self):
-        nx, aun = self.ac.calculate_metrics()
-        self.assertEqual(len(nx), 1)
-        self.assertEqual(len(aun), 1)
-        self.assertTrue(isinstance(nx, dict))
-        self.assertTrue(isinstance(aun, dict))
+        self.ac.calculate_metrics()
+        self.assertEqual(len(self.ac.nx_values), 1)
+        self.assertEqual(len(self.ac.aun_values), 1)
+        self.assertTrue(isinstance(self.ac.nx_values, dict))
+        self.assertTrue(isinstance(self.ac.aun_values, dict))
 
 
     def test_generate_df(self):
-        nx, aun = self.ac.calculate_metrics()
-        nxf, aunf = self.ac.generate_dataframes(nx, aun)
-        self.assertTrue(isinstance(nxf, pandas.core.frame.DataFrame))
-        self.assertTrue(isinstance(aunf, pandas.core.frame.DataFrame))
-        self.assertEqual(nxf.shape, (100, 4))
-        self.assertEqual(aunf.shape, (1, 3))
+        self.ac.calculate_metrics()
+        self.assertTrue(isinstance(self.ac.nx_frame, pandas.core.frame.DataFrame))
+        self.assertTrue(isinstance(self.ac.aun_frame, pandas.core.frame.DataFrame))
+        self.assertEqual(self.ac.nx_frame.shape, (100, 4))
+        self.assertEqual(self.ac.aun_frame.shape, (1, 3))
 
 
     def test_generate_df_ref(self):
-        nx, aun = self.ac_ref.calculate_metrics()
-        nxf, aunf = self.ac_ref.generate_dataframes(nx, aun)
-        self.assertTrue(isinstance(nxf, pandas.core.frame.DataFrame))
-        self.assertTrue(isinstance(aunf, pandas.core.frame.DataFrame))
-        self.assertEqual(nxf.shape, (200, 4))
-        self.assertEqual(aunf.shape, (2, 3))
+        self.ac_ref.calculate_metrics()
+        self.assertTrue(isinstance(self.ac_ref.nx_frame, pandas.core.frame.DataFrame))
+        self.assertTrue(isinstance(self.ac_ref.aun_frame, pandas.core.frame.DataFrame))
+        self.assertEqual(self.ac_ref.nx_frame.shape, (200, 4))
+        self.assertEqual(self.ac_ref.aun_frame.shape, (2, 3))
 
 
     def test_metric_frames(self):
         # only ref case
-        self.ac_ref.metric_dataframes(out_name="testing_frame")
-        check_exist01 = os.path.isfile('testing_frame.nx.csv')
-        check_exist02 = os.path.isfile('testing_frame.aun.csv')
-        check_notempty01 = os.path.getsize('testing_frame.nx.csv')
-        check_notempty02 = os.path.getsize('testing_frame.aun.csv')
+        self.ac_ref.calculate_metrics()
+        check_exist01 = os.path.isfile(f'{OUTNAME}.nx.csv')
+        check_exist02 = os.path.isfile(f'{OUTNAME}.aun.csv')
+        check_notempty01 = os.path.getsize(f'{OUTNAME}.nx.csv')
+        check_notempty02 = os.path.getsize(f'{OUTNAME}.aun.csv')
         self.assertTrue(check_exist01)
         self.assertTrue(check_exist02)
         self.assertTrue(check_notempty01 > 0)
@@ -189,14 +188,14 @@ class TestAssemblyCollection(unittest.TestCase):
 
 
     def test_metric_plots(self):
-        self.ac_ref.metric_plots(out_name="testing")
-        check_exist = os.path.isfile('testing.nx.pdf')
-        check_notempty = os.path.getsize('testing.nx.pdf')
+        self.ac_ref.plot()
+        check_exist = os.path.isfile(f'{OUTNAME}.nx.pdf')
+        check_notempty = os.path.getsize(f'{OUTNAME}.nx.pdf')
         self.assertTrue(check_exist)
         self.assertTrue(check_notempty > 0)
 
-        check_exist = os.path.isfile('testing.aun.pdf')
-        check_notempty = os.path.getsize('testing.aun.pdf')
+        check_exist = os.path.isfile(f'{OUTNAME}.aun.pdf')
+        check_notempty = os.path.getsize(f'{OUTNAME}.aun.pdf')
         self.assertTrue(check_exist)
         self.assertTrue(check_notempty > 0)
 
