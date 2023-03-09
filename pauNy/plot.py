@@ -22,7 +22,7 @@ def plot_nx(nx_frame: pd.DataFrame) -> p9.ggplot:
              data=nx_frame,
              mapping=p9.aes(x='Nx', y='val', linetype="reference", color="name"),
              size=2) +
-         p9.scale_color_brewer(type="div", palette=1) +
+         p9.scale_color_brewer(type="qual", palette=2) +
          p9.guides(linetype=None) +
          p9.ylab("contig length (bp)") +
          p9.xlab("Nx") +
@@ -52,7 +52,7 @@ def plot_aun(aun_frame: pd.DataFrame) -> p9.ggplot:
              mapping=p9.aes(color="name"),
              size=4,
              alpha=0.6) +
-         p9.scale_color_brewer(type="div", palette=1) +
+         p9.scale_color_brewer(type="qual", palette=2) +
          p9.guides(linetype=None, color=None) +
          p9.ylab("area under Nx") +
          p9.xlab("") +
