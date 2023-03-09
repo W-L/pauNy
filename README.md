@@ -42,23 +42,27 @@ Execute the runscript with input `-i / --input`, which can be fasta/fastq files 
 ### Optional args
 
 - `-o / --out` can specify a base name for output files
+- `-f / --format` specify output filetype for visualisation, e.g. pdf or png
 - `-r / --ref` for a path to a reference assembly. This triggers calculation of NGx and auNG values using the genome size. And will also mark this assembly as reference in output.
 - `-g / --genomesize` alternatively to a reference file, a genome size (estimate) can be given for scaling values to NGx and auNG.
 
 
-```shell
-usage: pauNy [-h] -i INPUT [INPUT ...] [-o OUT] [-r REF | -g GENOMESIZE]
+```
+usage: pauNy [-h] -i INPUT [INPUT ...] [-o OUT] [-f FORMAT] [-r REF | -g GENOMESIZE]
 
 Nx curves and area under Nx in python
 
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT [INPUT ...], --input INPUT [INPUT ...]
-                        input fasta file(s) or director(ies) of files. Can be multiple (space-separated).
+                        input fasta/fastq file(s) or director(ies) of files. Can be multiple (space-separated).
   -o OUT, --out OUT     base name for output files
-  -r REF, --ref REF     path to reference fasta file
+  -f FORMAT, --format FORMAT
+                        output format for plots
+  -r REF, --ref REF     path to reference sequence file
   -g GENOMESIZE, --genomesize GENOMESIZE
                         genome size or estimate
+
 
 ```
 
