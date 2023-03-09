@@ -34,7 +34,9 @@ def parse_input_arg(input_arg):
     elif os.path.isdir(first_element):
         path_set = set()
         # glob for all possible fasta file extensions in given dir
-        patterns = ["*.fa.gz", "*.fasta.gz", "*.fasta.gzip", "*.fa.gzip", "*.fasta", "*.fa"]
+        patterns_fa = ["*.fa.gz", "*.fasta.gz", "*.fasta.gzip", "*.fa.gzip", "*.fasta", "*.fa"]
+        patterns_fq = ["*.fq.gz", "*.fastq.gz", "*.fastq.gzip", "*.fq.gzip", "*.fastq", "*.fq"]
+        patterns = patterns_fa + patterns_fq
         for i in input_arg:
             for p in patterns:
                 path_set.update(glob.glob(f'{i}/{p}'))

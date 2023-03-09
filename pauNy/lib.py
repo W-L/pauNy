@@ -210,7 +210,23 @@ class Assembly:
         self.name = self.path.name
         self.gsize = 0 if not gsize else gsize
         self.gzipped = is_gzipped(self.path)
+        self.open_func = gzip.open if self.gzipped else open
+        self.symbol = self._which_fx()
         self.lengths = self._get_sequence_lengths()
+
+
+    def _which_fx(self) -> str:
+        """
+        read first byte to determine file type
+
+        :return: header symbol of filetype
+        """
+        with self.open_func(self.path, 'rb') as f:
+            symbol = str(f.read(1), 'utf-8')
+
+        if symbol not in {'@', '>'}:
+            raise FileNotFoundError("Input is neither fa nor fq")
+        return symbol
 
 
     def _get_sequence_lengths(self) -> np.ndarray:
@@ -221,10 +237,8 @@ class Assembly:
         """
         assert os.path.getsize(self.path) != 0
         seq_lengths = []
-        open_func = gzip.open if self.gzipped else open
-        read_func = read_fa_gz if self.gzipped else read_fa
-        with open_func(self.path, 'r') as fa:
-            for header, seq in read_func(fa):
+        with self.open_func(self.path, 'r') as fx:
+            for header, seq in read_fx(fx, self.gzipped, self.symbol):
                 seq_lengths.append(len(seq))
         # get lengths of all sequences
         lengths = np.array(seq_lengths)
@@ -301,32 +315,28 @@ def print_frame(df: pd.DataFrame, out_file: str = None) -> None:
 
 
 
-def read_fa(fh: TextIO) -> Tuple[str, str]:
+def read_fx(fh: TextIO, gz: bool, symbol: str = '>') -> Tuple[str, str]:
     """
     Yield headers and sequences of a fasta file
 
     :param fh: File handle of an open file connection
+    :param gz: is file gzipped
+    :param symbol: header symbol to determine fq or fa
     :return: Tuple of fasta header and sequence
     """
-    faiter = (x[1] for x in groupby(fh, lambda line: line[0] == ">"))
-    for header in faiter:
-        headerStr = header.__next__().strip().split(' ')[0]
-        seq = "".join(s.strip() for s in faiter.__next__())
-        yield headerStr, seq
+    if not gz:
+        faiter = (x[1] for x in groupby(fh, lambda line: line[0] == symbol))
+        for header in faiter:
+            headerStr = header.__next__().strip().replace(symbol, '').split(' ')[0]
+            seq = "".join(s.strip() for s in faiter.__next__())
+            yield headerStr, seq
+    else:
+        faiter = (x[1] for x in groupby(fh, lambda line: str(line, 'utf-8')[0] == symbol))
+        for header in faiter:
+            headerStr = str(header.__next__(), 'utf-8').strip().replace(symbol, '').split(' ')[0]
+            seq = "".join(str(s, 'utf-8').strip() for s in faiter.__next__())
+            yield headerStr, seq
 
-
-def read_fa_gz(fh: TextIO) -> Tuple[str, str]:
-    """
-    Yield headers and sequences of a gzipped fasta file
-
-    :param fh: File handle of an open file connection
-    :return: Tuple of fasta header and sequence
-    """
-    faiter = (x[1] for x in groupby(fh, lambda line: str(line, 'utf-8')[0] == ">"))
-    for header in faiter:
-        headerStr = str(header.__next__(), 'utf-8').strip().replace('>', '').split()[0]
-        seq = "".join(str(s, 'utf-8').strip() for s in faiter.__next__())
-        yield headerStr, seq
 
 
 def convert_paths(paths: List[Union[pathlib.Path, str]]) -> List[pathlib.Path]:
