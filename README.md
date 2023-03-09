@@ -37,7 +37,7 @@ pip install numpy pandas plotnine
 
 ### Required args
 
-Execute the runscript with input `-i / --input`, which can be fasta files of assemblies or one or more directories with fasta files in them. Files can be gzipped too.
+Execute the runscript with input `-i / --input`, which can be fasta/fastq files or one or more directories with fasta/fastq files in them. Files can be gzipped too.
 
 ### Optional args
 
@@ -70,17 +70,19 @@ Instead of using the runscript, this module can be imported into other scripts a
 
 ```python
 import pauNy
-# for a single assembly fasta file
+# for a single sequence file
 asm = pauNy.Assembly(path, [gsize])
 nx_values = asm.calculate_Nx()
 auN_value = asm.calculate_auN()
 
 # for multiple assemblies
 asm_c = pauNy.AssemblyCollection(paths, [reference_path, genome_size])
-nx_dict, aun_dict = asm_c.calculate_metrics()
-nx_frame, aun_frame = asm_c.generate_dataframes()   # dicts can be passed, otherwise they are recalculated
-asm_c.metric_dataframes()                           # print metrics to file; as above dfs can be passed optionally 
-asm_c.metric_plots()                                # generate visualisations (see example); as above dfs can be passed optionally
+asm_c.calculate_metrics()                   
+asm_c.nx_values                             # metrics are available as dictionaries per input file
+asm_c.nx_frame                              # or as pandas frames
+asm_c.aun_values
+asm_c.aun_frame
+asm_c.plot()                                # generate visualisations (see example)
 ```
 
 For documentation check out the docstrings and type hints in the sources.
