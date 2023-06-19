@@ -117,6 +117,11 @@ coverage report
 ```
 
 
+## TODO
+
+- allow other types of input: array/list of contig lengths
+
+
 
 
 
