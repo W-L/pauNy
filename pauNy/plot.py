@@ -24,8 +24,8 @@ def plot_nx(nx_frame: pd.DataFrame) -> p9.ggplot:
              size=2) +
          p9.scale_color_brewer(type="qual", palette=2) +
          p9.guides(linetype=None) +
-         p9.ylab("contig length (bp)") +
-         p9.xlab("Nx") +
+         p9.ylab("Nx") +
+         p9.xlab("x") +
          custom_theme)
     return p
 
