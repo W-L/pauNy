@@ -120,6 +120,7 @@ coverage report
 ## TODO
 
 - allow other types of input: array/list of contig lengths
+- the plotting breaks with plotnine >0.10.1 
 
 
 
